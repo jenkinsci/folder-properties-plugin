@@ -4,8 +4,11 @@ import com.cloudbees.hudson.plugins.folder.Folder;
 import com.mig82.folders.properties.FolderProperties;
 import com.mig82.folders.properties.StringProperty;
 import com.mig82.folders.wrappers.ParentFolderBuildWrapper;
+import hudson.Functions;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.tasks.BatchFile;
+import hudson.tasks.CommandInterpreter;
 import hudson.tasks.Shell;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -27,15 +30,15 @@ public class FolderPropertiesTest {
     @Before
     public void setUp() throws IOException {
         f = r.jenkins.createProject(Folder.class, "f");
-        FolderProperties properties=new FolderProperties();
-        properties.setProperties(new StringProperty[]{new StringProperty("key1","value1")});
+        FolderProperties properties = new FolderProperties();
+        properties.setProperties(new StringProperty[]{new StringProperty("key1", "value1")});
         f.addProperty(properties);
     }
 
     @Test
     public void testPipelineOutOfNode() throws Exception {
         WorkflowJob p = f.createProject(WorkflowJob.class, "p");
-        String script="withFolderProperties{\n" +
+        String script = "withFolderProperties{\n" +
                 "    echo(\"key1: ${env.key1}\")\n" +
                 "}";
         p.setDefinition(new CpsFlowDefinition(script, true));
@@ -46,7 +49,7 @@ public class FolderPropertiesTest {
     @Test
     public void testPipelineInNode() throws Exception {
         WorkflowJob p = f.createProject(WorkflowJob.class, "p");
-        String script="node {\n" +
+        String script = "node {\n" +
                 "\n" +
                 "            withFolderProperties{\n" +
                 "                echo(\"key1: ${env.key1}\")\n" +
@@ -62,7 +65,9 @@ public class FolderPropertiesTest {
 
         FreeStyleProject p = f.createProject(FreeStyleProject.class, "p");
         p.getBuildWrappersList().add(new ParentFolderBuildWrapper());
-        p.getBuildersList().add(new Shell("echo key1: $key1"));
+        p.getBuildersList().add(Functions.isWindows() ?
+                new BatchFile("echo key1: %key1%") :
+                new Shell("echo key1: $key1"));
         FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
         r.assertLogContains("key1: value1", b);
     }
@@ -70,12 +75,12 @@ public class FolderPropertiesTest {
     @Test
     public void testSubFolder() throws Exception {
         Folder sub = f.createProject(Folder.class, "sub");
-        FolderProperties properties=new FolderProperties();
-        properties.setProperties(new StringProperty[]{new StringProperty("key1","override")});
+        FolderProperties properties = new FolderProperties();
+        properties.setProperties(new StringProperty[]{new StringProperty("key1", "override")});
         sub.addProperty(properties);
 
         WorkflowJob p = sub.createProject(WorkflowJob.class, "p");
-        String script="node {\n" +
+        String script = "node {\n" +
                 "\n" +
                 "            withFolderProperties{\n" +
                 "                echo(\"key1: ${env.key1}\")\n" +
@@ -90,7 +95,7 @@ public class FolderPropertiesTest {
     @Test
     public void testPipelineOverrideEnv() throws Exception {
         WorkflowJob p = f.createProject(WorkflowJob.class, "p");
-        String script="withEnv(['key1=old']) {\n" +
+        String script = "withEnv(['key1=old']) {\n" +
                 "    withFolderProperties{\n" +
                 "        echo(\"key1: ${env.key1}\")\n" +
                 "    }\n" +
