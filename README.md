@@ -23,7 +23,7 @@ Just create a
 go to its configuration page and add as many properties as you need
 under the `Folder Properties` section.
 
-![](docs/images/folder-properties-config.png){height="250"}
+![](docs/images/folder-properties-config.png)
 
 ## Freestyle Jobs
 
