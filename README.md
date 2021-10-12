@@ -1,115 +1,103 @@
-# Jenkins Folder Properties Plugin
+The folder-properties plugin is a Jenkins plugin which allows users with config permission to define
+properties for a folder which can then be used by any jobs contained
+within it or in any of its sub-folders. 
 
-A Jenkins plugin which allows users with config permission to define properties for a folder which can then be used by
-any jobs contained within it or any of its sub-folders.
+# About this Plugin
 
-The aim here is to remove the need to specify the same properties over and over again for all the jobs inside a folder.
+The aim here is to remove the need to specify the same properties over
+and over again for all the jobs inside a folder.
 
-In structures where two or more folders are nested, any property defined for a folder will be overridden by any other property of the same name defined by one of its sub-folders.
+## How to use?
 
-## Develop
-
-For ease of development I've added a `logging.properties` file that can be used by specifying it as an option to the
-Maven `hpi:run` target like so:
-
-    mvn hpi:run -Djava.util.logging.config.file=logging.properties
-
-## Package
-
-Since this is my first version of this and I'm still missing the tests...
-
-    mvn package -DskipTests=true
-
-## Use
+To configure, just create a
+[folder](https://plugins.jenkins.io/cloudbees-folder/),
+go to its configuration page and add as many properties as you need
+under the `Folder Properties` section.
 
 In structures where two or more folders are nested, any property defined for a folder will be overridden by any other
 property of the same name defined by one of its sub-folders.
 
-<img src="./pics/folder-properties-1.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/>
+![](docs/images/folder-properties-config.png)
 
-### Freestyle Jobs
 
-Freestyle jobs must opt into the `Folder Properties` build wrapper from the `Build Environment` section of their
-configuration page in order to be able to access these properties as they would any other environment variable.
+## Freestyle Jobs
 
-<img src="./pics/freestyle-build-env.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/><br>
+Freestyle jobs must opt into the `Folder Properties` build wrapper from
+the `Build Environment` section of their configuration page in order to
+be able to access these properties as they would any other environment
+variable.
 
-Only then will they inherit properties defined by their parent or ancestor folders —e.g. Running `echo $FOO` in a Shell build step:
+![](docs/images/folder-properties-freestyle-config.png)
 
-<img src="./pics/freestyle-example-1.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/><br>
+Only then will they inherit properties defined by their parent or ancestor folders —e.g. Running `echo $FOO` in a Shell build step :
+
+![](docs/images/freestyle-example-1.png)
 
 #### SCM Step in Freestyle Jobs
 
 Starting with version 1.2, Freestyle jobs can also use folder properties to **define SCM parameters** —e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
 
-<img src="./pics/freestyle-example-scm-1.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/><br>
+![](docs/images/freestyle-example-scm-1.png)
 
-Then, descendant freestyle jobs can use that either as `$SCM_URL` and `$BRANCH_SELECTOR`:
+Then, descendant freestyle jobs can use that either as `$SCM_URL` and `$BRANCH_SELECTOR` :
 
-<img src="./pics/freestyle-example-scm-2.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/><br>
+![](docs/images/freestyle-example-scm-2.png)
 
- or `${SCM_URL}` and `${BRANCH_SELECTOR}`:
+ or as `${SCM_URL}` and `${BRANCH_SELECTOR}` :
 
-<img src="./pics/freestyle-example-scm-3.png" align="center" alt="freestyle build env" style="width: 80%; height: auto"/><br>
+![](docs/images/freestyle-example-scm-3.png)
 
-### Pipeline Jobs
+## Pipeline Jobs
 
-Pipeline jobs can use step `withFolderProperties` to access them either inside or outside a node step:
+Pipeline jobs can use step `withFolderProperties` to access them :
 
-    withFolderProperties{
-        echo("Foo: ${env.FOO}")
-    }
+**Using folder properties in a pipeline job**
 
-Jenkins deployments using some of the older versions of the
-[Structs Plugin](https://wiki.jenkins.io/display/JENKINS/Structs+plugin) will need to do this using the `wrap` meta-step.
-In such scenarios you should note that the wrapped syntax must run inside a node step.
+``` groovy
+withFolderProperties{
+    echo("Foo: ${env.FOO}")
+}
+```
 
-    node {
-        wrap([$class: 'ParentFolderBuildWrapper']) {
-            echo("Foo: ${env.FOO}")
-        }
-    }
+Jenkins deployments using some of the older versions of the [Structs
+Plugin](https://plugins.jenkins.io/structs/) will need
+to do this using the `wrap` meta-step :
 
-### Declarative Pipeline Jobs
+**Using folder properties in older pipeline jobs**
 
-Declarative pipeline jobs can also use the `options` directive to leverage folder properties as follows:
+``` groovy
+wrap([$class: 'ParentFolderBuildWrapper']) {
+    echo("Foo: ${env.FOO}")
+}
+```
 
-    pipeline {
-        agent any
-        options {
-            withFolderProperties()
-        }
-        stages {
-            stage('Test') {
-                steps {
-                    echo("Foo: ${env.FOO}")
+## Job DSL
+
+In Job DSL scripts you can define folder properties like so :
+
+**Job DSL example**
+
+``` groovy
+folder('my folder') {
+    properties {
+        folderProperties {
+            properties {
+                stringProperty {
+                    key('FOO')
+                    value('foo1')
                 }
             }
         }
     }
+}
+```
 
-### Job DSL
-
-If you use [Job DSL](https://plugins.jenkins.io/job-dsl/) you can create folders with predefined properties like this:
-
-    folder(folderName) {
-        properties {
-            folderProperties {
-                properties {
-                    stringProperty {
-                        key('FOO')
-                        value('bar')
-                    }
-                }
-            }
-        }
-    }
-
-## Authors & Contributors:
+## Authors & Contributors 
 
 * [Miguelángel Fernández Mendoza](https://github.com/mig82).
 * [GongYi](https://github.com/topikachu).
 * [Stefan Hirche](https://github.com/StefanHirche)
+* [Deepak Gupta](https://github.com/Mr-DG-Wick)
 
 ## References
 
