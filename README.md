@@ -1,29 +1,24 @@
-A Jenkins plugin which allows users with config permission to define
+The folder-properties plugin is a Jenkins plugin which allows users with config permission to define
 properties for a folder which can then be used by any jobs contained
-within it or any of its sub-folders. 
-
-You can find [this plugin's source code on
-Github](https://github.com/jenkinsci/folder-properties-plugin).
-
- 
+within it or in any of its sub-folders. 
 
 # About this Plugin
 
 The aim here is to remove the need to specify the same properties over
 and over again for all the jobs inside a folder.
 
-In structures where two or more folders are nested, any property defined
-for a folder will be overridden by any other property of the same name
-defined by one of its sub-folders.
+## How to use?
 
-## Configuring Folder Properties
-
-Just create a
+To configure, just create a
 [folder](https://plugins.jenkins.io/cloudbees-folder/),
 go to its configuration page and add as many properties as you need
 under the `Folder Properties` section.
 
+In structures where two or more folders are nested, any property defined for a folder will be overridden by any other
+property of the same name defined by one of its sub-folders.
+
 ![](docs/images/folder-properties-config.png)
+
 
 ## Freestyle Jobs
 
@@ -34,13 +29,31 @@ variable.
 
 ![](docs/images/folder-properties-freestyle-config.png)
 
+Only then will they inherit properties defined by their parent or ancestor folders —e.g. Running `echo $FOO` in a Shell build step :
+
+![](docs/images/freestyle-example-1.png)
+
+#### SCM Step in Freestyle Jobs
+
+Starting with version 1.2, Freestyle jobs can also use folder properties to **define SCM parameters** —e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
+
+![](docs/images/freestyle-example-scm-1.png)
+
+Then, descendant freestyle jobs can use that either as `$SCM_URL` and `$BRANCH_SELECTOR` :
+
+![](docs/images/freestyle-example-scm-2.png)
+
+ or as `${SCM_URL}` and `${BRANCH_SELECTOR}` :
+
+![](docs/images/freestyle-example-scm-3.png)
+
 ## Pipeline Jobs
 
-Pipeline jobs can use step `withFolderProperties` to access them:
+Pipeline jobs can use step `withFolderProperties` to access them :
 
 **Using folder properties in a pipeline job**
 
-``` syntaxhighlighter-pre
+``` groovy
 withFolderProperties{
     echo("Foo: ${env.FOO}")
 }
@@ -48,11 +61,11 @@ withFolderProperties{
 
 Jenkins deployments using some of the older versions of the [Structs
 Plugin](https://plugins.jenkins.io/structs/) will need
-to do this using the `wrap` meta-step:
+to do this using the `wrap` meta-step :
 
 **Using folder properties in older pipeline jobs**
 
-``` syntaxhighlighter-pre
+``` groovy
 wrap([$class: 'ParentFolderBuildWrapper']) {
     echo("Foo: ${env.FOO}")
 }
@@ -60,11 +73,11 @@ wrap([$class: 'ParentFolderBuildWrapper']) {
 
 ## Job DSL
 
-In Job DSL scripts you can define folder properties like so:
+In Job DSL scripts you can define folder properties like so :
 
 **Job DSL example**
 
-``` syntaxhighlighter-pre
+``` groovy
 folder('my folder') {
     properties {
         folderProperties {
@@ -78,3 +91,16 @@ folder('my folder') {
     }
 }
 ```
+
+## Authors & Contributors 
+
+* [Miguelángel Fernández Mendoza](https://github.com/mig82).
+* [GongYi](https://github.com/topikachu).
+* [Stefan Hirche](https://github.com/StefanHirche)
+* [Deepak Gupta](https://github.com/Mr-DG-Wick)
+
+## References
+
+* Site: https://mig82.github.io/folder-properties-plugin
+* Dependencies: https://mig82.github.io/folder-properties-plugin/doc/dependencies.html
+* Javadoc: https://mig82.github.io/folder-properties-plugin/apidocs
