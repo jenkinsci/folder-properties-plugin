@@ -6,7 +6,13 @@ import hudson.Extension;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.jenkinsci.plugins.workflow.steps.*;
+import org.jenkinsci.plugins.workflow.steps.BodyInvoker;
+import org.jenkinsci.plugins.workflow.steps.EnvironmentExpander;
+import org.jenkinsci.plugins.workflow.steps.Step;
+import org.jenkinsci.plugins.workflow.steps.StepContext;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
+import org.jenkinsci.plugins.workflow.steps.StepExecution;
+import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
@@ -34,7 +40,7 @@ public class FolderPropertiesStep extends Step implements Serializable {
 		return new Execution(stepContext, this);
 	}
 
-	private static class Execution extends AbstractSynchronousNonBlockingStepExecution<Void> {
+	private static class Execution extends SynchronousNonBlockingStepExecution<Void> {
 		private FolderPropertiesStep folderPropertiesStep;
 
 		public Execution(StepContext context, FolderPropertiesStep folderPropertiesStep) {

@@ -19,16 +19,16 @@ import java.util.logging.Logger;
 public class PropertiesLoader {
 	private static final Logger LOGGER = Logger.getLogger(PropertiesLoader.class.getName());
 
-	public static EnvVars loadFolderProperties(Job job) {
+	public static EnvVars loadFolderProperties(Job<?,?> job) {
 		LOGGER.log(Level.FINER, "1. Searching for folder properties in ancestors of: {0}\n", job.getDisplayName());
-		ItemGroup parent = job.getParent();
-		EnvVars envVars = new EnvVars();
+		ItemGroup<?> parent = job.getParent();
+		final EnvVars envVars = new EnvVars();
 		//Look in all the ancestors...
 		while (parent != null) {
-			if (parent instanceof AbstractFolder) {
+			if (parent instanceof AbstractFolder<?>) {
 				LOGGER.log(Level.FINEST, "2. Searching for folder properties in: {0}\n", parent.getDisplayName());
-				AbstractFolder folder = (AbstractFolder) parent;
-				FolderProperties folderProperties = (FolderProperties) folder.getProperties().get(FolderProperties.class);
+				final AbstractFolder<?> folder = (AbstractFolder<?>) parent;
+				final FolderProperties<?> folderProperties = (FolderProperties<?>) folder.getProperties().get(FolderProperties.class);
 				if (folderProperties != null) {
 					StringProperty[] newlyFoundProperties = folderProperties.getProperties();
 					LOGGER.log(Level.FINER, "3. Found {0} folder properties in {1}\n", new Object[]{
