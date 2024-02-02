@@ -4,6 +4,7 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.mig82.folders.Messages;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.util.CopyOnWriteList;
@@ -13,7 +14,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.Nonnull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,7 +95,7 @@ public class FolderProperties<C extends AbstractFolder<?>> extends AbstractFolde
 	@Extension
 	public static class DescriptorImpl extends AbstractFolderPropertyDescriptor {
 
-		@Nonnull
+		@NonNull
 		@Override
 		public String getDisplayName() {
 
