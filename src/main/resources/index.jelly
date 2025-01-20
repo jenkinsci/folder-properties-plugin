@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+  Allows defining properties for folders which are then inherited by all contained jobs.
+</div>
