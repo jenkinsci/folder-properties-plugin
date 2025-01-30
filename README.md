@@ -59,18 +59,6 @@ withFolderProperties{
 }
 ```
 
-Jenkins deployments using some of the older versions of the [Structs
-Plugin](https://plugins.jenkins.io/structs/) will need
-to do this using the `wrap` meta-step :
-
-**Using folder properties in older pipeline jobs**
-
-``` groovy
-wrap([$class: 'ParentFolderBuildWrapper']) {
-    echo("Foo: ${env.FOO}")
-}
-```
-
 ## Job DSL
 
 In Job DSL scripts you can define folder properties like so :
