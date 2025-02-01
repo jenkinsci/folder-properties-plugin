@@ -86,9 +86,3 @@ folder('my folder') {
 * [GongYi](https://github.com/topikachu).
 * [Stefan Hirche](https://github.com/StefanHirche)
 * [Deepak Gupta](https://github.com/Mr-DG-Wick)
-
-## References
-
-* Site: https://mig82.github.io/folder-properties-plugin
-* Dependencies: https://mig82.github.io/folder-properties-plugin/doc/dependencies.html
-* Javadoc: https://mig82.github.io/folder-properties-plugin/apidocs
