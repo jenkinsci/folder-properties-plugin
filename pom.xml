@@ -100,5 +100,19 @@
             <artifactId>workflow-step-api</artifactId>
         </dependency>
 
+        <!--Need these for declarative pipeline test -->
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-api</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
