@@ -56,15 +56,15 @@
     </pluginRepositories>
 
     <dependencyManagement>
-	<dependencies>
-	    <dependency>
-		<groupId>io.jenkins.tools.bom</groupId>
-		<artifactId>bom-${jenkins.baseline}.x</artifactId>
-		<version>3944.v1a_e4f8b_452db_</version>
-		<scope>import</scope>
-		<type>pom</type>
-	    </dependency>
-	</dependencies>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-${jenkins.baseline}.x</artifactId>
+                <version>3944.v1a_e4f8b_452db_</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
     </dependencyManagement>
 
     <dependencies>
