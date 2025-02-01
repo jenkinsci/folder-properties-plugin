@@ -1,8 +1,8 @@
-The folder-properties plugin is a Jenkins plugin which allows users with config permission to define
-properties for a folder which can then be used by any jobs contained
+The Folder Properties plugin allows users with config permission to define
+properties for a folder which can then be used by jobs contained
 within it or in any of its sub-folders. 
 
-# About this Plugin
+## About this Plugin
 
 The aim here is to remove the need to specify the same properties over
 and over again for all the jobs inside a folder.
@@ -35,7 +35,7 @@ Only then will they inherit properties defined by their parent or ancestor folde
 
 #### SCM Step in Freestyle Jobs
 
-Starting with version 1.2, Freestyle jobs can also use folder properties to **define SCM parameters** —e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
+Freestyle jobs can also use folder properties to **define SCM parameters** —e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
 
 ![](docs/images/freestyle-example-scm-1.png)
 
