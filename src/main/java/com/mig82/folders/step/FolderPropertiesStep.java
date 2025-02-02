@@ -34,7 +34,7 @@ public class FolderPropertiesStep extends Step implements Serializable {
 		return new Execution(stepContext, this);
 	}
 
-	private static class Execution extends AbstractSynchronousNonBlockingStepExecution<Void> {
+	private static class Execution extends SynchronousNonBlockingStepExecution<Void> {
 		private FolderPropertiesStep folderPropertiesStep;
 
 		public Execution(StepContext context, FolderPropertiesStep folderPropertiesStep) {
