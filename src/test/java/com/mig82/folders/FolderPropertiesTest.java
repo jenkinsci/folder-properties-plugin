@@ -10,12 +10,17 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.jvnet.hudson.test.JenkinsRule;
 
 public class FolderPropertiesTest {
     @ClassRule
     public static JenkinsRule r = new JenkinsRule();
+
+    @Rule
+    public TestName name = new TestName();
 
     private static Folder f;
 
@@ -78,11 +83,14 @@ public class FolderPropertiesTest {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-3",
-                "node {\n" + "  wrap([$class: 'ParentFolderBuildWrapper']) {\n"
-                        + "    echo(\"key1: ${env.key1}\")\n"
-                        + "  }\n"
-                        + "}");
+                "p-" + name.getMethodName(),
+                """
+                node {
+                  wrap([$class: 'ParentFolderBuildWrapper']) {
+                    echo("key1: ${env.key1}")
+                  }
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -97,8 +105,14 @@ public class FolderPropertiesTest {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-4",
-                "node {\n" + "  withFolderProperties {\n" + "    echo(\"key1: ${env.key1}\")\n" + "  }\n" + "}");
+                "p-" + name.getMethodName(),
+                """
+                node {
+                  withFolderProperties {
+                    echo("key1: ${env.key1}")
+                  }
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -113,18 +127,21 @@ public class FolderPropertiesTest {
         // Create a declarative pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-5",
-                "pipeline {\n" + "  agent any\n"
-                        + "  stages {\n"
-                        + "    stage('Report folder property key1') {\n"
-                        + "      steps {\n"
-                        + "        withFolderProperties {\n"
-                        + "          echo \"key1: ${env.key1}\"\n"
-                        + "        }\n"
-                        + "      }\n"
-                        + "    }\n"
-                        + "  }\n"
-                        + "}\n");
+                "p-" + name.getMethodName(),
+                """
+                pipeline {
+                  agent any
+                  stages {
+                    stage('Report folder property key1') {
+                      steps {
+                        withFolderProperties {
+                          echo "key1: ${env.key1}"
+                        }
+                      }
+                    }
+                  }
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -138,7 +155,13 @@ public class FolderPropertiesTest {
 
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f, "p-6", "withFolderProperties {\n" + "  echo(\"key1: ${env.key1}\")\n" + "}");
+                f,
+                "p-" + name.getMethodName(),
+                """
+                withFolderProperties {
+                  echo("key1: ${env.key1}")
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -161,12 +184,15 @@ public class FolderPropertiesTest {
         // Create a pipeline job inside the subfolder which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 sub,
-                "p-7",
-                "node {\n" + "  wrap([$class: 'ParentFolderBuildWrapper']){\n"
-                        + "    echo(\"key1: ${env.key1}\")\n"
-                        + "    echo(\"key2: ${env.key2}\")\n"
-                        + "  }\n"
-                        + "}");
+                "p-" + name.getMethodName(),
+                """
+                node {
+                  wrap([$class: 'ParentFolderBuildWrapper']){
+                    echo("key1: ${env.key1}")
+                    echo("key2: ${env.key2}")
+                  }
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
@@ -182,13 +208,16 @@ public class FolderPropertiesTest {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-8",
-                "withEnv(['key1=old']) {\n" + "  node {\n"
-                        + "    wrap([$class: 'ParentFolderBuildWrapper']){\n"
-                        + "      echo(\"key1: ${env.key1}\")\n"
-                        + "    }\n"
-                        + "  }\n"
-                        + "}");
+                "p-" + name.getMethodName(),
+                """
+                withEnv(['key1=old']) {
+                  node {
+                    wrap([$class: 'ParentFolderBuildWrapper']){
+                      echo("key1: ${env.key1}")
+                    }
+                  }
+                }
+                """);
 
         // Run the build
         WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
