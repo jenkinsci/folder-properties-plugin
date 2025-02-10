@@ -14,7 +14,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.ArrayUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * A class that holds an array of properties for a folder.
@@ -39,7 +39,7 @@ public class FolderProperties<C extends AbstractFolder<?>> extends AbstractFolde
     }
 
     @Override
-    public AbstractFolderProperty<?> reconfigure(StaplerRequest request, JSONObject formData)
+    public AbstractFolderProperty<?> reconfigure(StaplerRequest2 request, JSONObject formData)
             throws Descriptor.FormException {
         if (formData == null) {
             return null;
