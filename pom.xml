@@ -9,7 +9,7 @@
   </parent>
   <groupId>com.mig82</groupId>
   <artifactId>folder-properties</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
   <name>Folder Properties Plugin</name>
 
@@ -29,8 +29,7 @@
   </scm>
 
   <properties>
-    <revision>1.3.0</revision>
-    <changelist>-SNAPSHOT</changelist>
+    <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/folder-properties-plugin</gitHubRepo>
     <jenkins.baseline>2.452</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.4</jenkins.version>
