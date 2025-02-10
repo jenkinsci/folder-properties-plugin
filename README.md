@@ -88,6 +88,6 @@ folder('my folder') {
 
 ## References
 
-* Site: https://mig82.github.io/folder-properties-plugin
-* Dependencies: https://mig82.github.io/folder-properties-plugin/doc/dependencies.html
-* Javadoc: https://mig82.github.io/folder-properties-plugin/apidocs
+* [Site](https://plugins.jenkins.io/folder-properties/)
+* [Dependencies](https://plugins.jenkins.io/folder-properties/dependencies/)
+* [Javadoc](https://javadoc.jenkins-ci.org/plugin/folder-properties/)
