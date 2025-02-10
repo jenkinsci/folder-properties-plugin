@@ -19,7 +19,6 @@ property of the same name defined by one of its sub-folders.
 
 ![](docs/images/folder-properties-config.png)
 
-
 ## Freestyle Jobs
 
 Freestyle jobs must opt into the `Folder Properties` build wrapper from
@@ -92,7 +91,7 @@ folder('my folder') {
 }
 ```
 
-## Authors & Contributors 
+## Authors & Contributors
 
 * [Miguelángel Fernández Mendoza](https://github.com/mig82).
 * [GongYi](https://github.com/topikachu).
