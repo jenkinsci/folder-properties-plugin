@@ -5,7 +5,7 @@ import com.mig82.folders.properties.FolderProperties;
 import com.mig82.folders.properties.StringProperty;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
+import java.io.IOException;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.BeforeClass;
@@ -13,200 +13,187 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import java.io.IOException;
-
 public class FolderPropertiesTest {
-	@ClassRule
-	public static JenkinsRule r = new JenkinsRule();
-	private static Folder f;
+    @ClassRule
+    public static JenkinsRule r = new JenkinsRule();
 
-	@BeforeClass
-	public static void setUp() throws IOException {
+    private static Folder f;
 
-		//Create a top level parent folder to test with.
-		f = r.jenkins.createProject(Folder.class, "f");
+    @BeforeClass
+    public static void setUp() throws IOException {
 
-		//Add a couple of properties to test with.
-		FolderProperties properties = new FolderProperties();
-		properties.setProperties(new StringProperty[]{
-				new StringProperty("key1", "value1"),
-				new StringProperty("key2", "value2")
-		});
-		f.addProperty(properties);
-	}
+        // Create a top level parent folder to test with.
+        f = r.jenkins.createProject(Folder.class, "f");
 
-	@Test
-	public void testFreestyle() throws Exception {
+        // Add a couple of properties to test with.
+        FolderProperties properties = new FolderProperties();
+        properties.setProperties(
+                new StringProperty[] {new StringProperty("key1", "value1"), new StringProperty("key2", "value2")});
+        f.addProperty(properties);
+    }
 
-		//Create a freestyle project which attempts to use props from parent folder.
-		FreeStyleProject p = FreestyleTestHelper.createJob(f, "p-1");
-		FreestyleTestHelper.addEcho(p, "key1");
-		FreestyleTestHelper.addEcho(p, "key2");
+    @Test
+    public void testFreestyle() throws Exception {
 
-		//Run the build.
-		FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a freestyle project which attempts to use props from parent folder.
+        FreeStyleProject p = FreestyleTestHelper.createJob(f, "p-1");
+        FreestyleTestHelper.addEcho(p, "key1");
+        FreestyleTestHelper.addEcho(p, "key2");
 
-		//Check that both properties were accessible.
-		r.assertLogContains("key1: value1", b);
-		r.assertLogContains("key2: value2", b);
-	}
+        // Run the build.
+        FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testFreestyleInSubFolder() throws Exception {
+        // Check that both properties were accessible.
+        r.assertLogContains("key1: value1", b);
+        r.assertLogContains("key2: value2", b);
+    }
 
-		//Create a subfolder.
-		Folder sub = f.createProject(Folder.class, "sub-1");
+    @Test
+    public void testFreestyleInSubFolder() throws Exception {
 
-		//Add a property in the subfolder that overrides another in the parent folder.
-		FolderProperties properties = new FolderProperties();
-		properties.setProperties(new StringProperty[]{
-				new StringProperty("key1", "override")
-		});
-		sub.addProperty(properties);
+        // Create a subfolder.
+        Folder sub = f.createProject(Folder.class, "sub-1");
 
-		//Create a freestyle project in the subfolder that attempts to use props from parent and grandparent.
-		FreeStyleProject p = FreestyleTestHelper.createJob(sub, "p-2");
-		FreestyleTestHelper.addEcho(p, "key1");
-		FreestyleTestHelper.addEcho(p, "key2");
+        // Add a property in the subfolder that overrides another in the parent folder.
+        FolderProperties properties = new FolderProperties();
+        properties.setProperties(new StringProperty[] {new StringProperty("key1", "override")});
+        sub.addProperty(properties);
 
-		//Run the build.
-		FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a freestyle project in the subfolder that attempts to use props from parent and grandparent.
+        FreeStyleProject p = FreestyleTestHelper.createJob(sub, "p-2");
+        FreestyleTestHelper.addEcho(p, "key1");
+        FreestyleTestHelper.addEcho(p, "key2");
 
-		//Check that both properties were accessible.
-		r.assertLogContains("key1: override", b);
-		r.assertLogContains("key2: value2", b);
-	}
+        // Run the build.
+        FreeStyleBuild b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineInNode() throws Exception {
+        // Check that both properties were accessible.
+        r.assertLogContains("key1: override", b);
+        r.assertLogContains("key2: value2", b);
+    }
 
-		//Create a pipeline job which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(f, "p-3",
-			"node {\n" +
-			"  wrap([$class: 'ParentFolderBuildWrapper']) {\n" +
-			"    echo(\"key1: ${env.key1}\")\n" +
-			"  }\n" +
-			"}"
-		);
+    @Test
+    public void testPipelineInNode() throws Exception {
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a pipeline job which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                f,
+                "p-3",
+                "node {\n" + "  wrap([$class: 'ParentFolderBuildWrapper']) {\n"
+                        + "    echo(\"key1: ${env.key1}\")\n"
+                        + "  }\n"
+                        + "}");
 
-		//Check the logs
-		r.assertLogContains("key1: value1", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineInNodeNoWrap() throws Exception {
+        // Check the logs
+        r.assertLogContains("key1: value1", b);
+    }
 
-		//Create a pipeline job which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(f, "p-4",
-			"node {\n" +
-			"  withFolderProperties {\n" +
-			"    echo(\"key1: ${env.key1}\")\n" +
-			"  }\n" +
-			"}"
-		);
+    @Test
+    public void testPipelineInNodeNoWrap() throws Exception {
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a pipeline job which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                f,
+                "p-4",
+                "node {\n" + "  withFolderProperties {\n" + "    echo(\"key1: ${env.key1}\")\n" + "  }\n" + "}");
 
-		//Check the logs
-		r.assertLogContains("key1: value1", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineDeclarative() throws Exception {
+        // Check the logs
+        r.assertLogContains("key1: value1", b);
+    }
 
-		//Create a declarative pipeline job which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(f, "p-5",
-			"pipeline {\n" +
-			"  agent any\n" +
-			"  stages {\n" +
-			"    stage('Report folder property key1') {\n" +
-			"      steps {\n" +
-			"        withFolderProperties {\n" +
-			"          echo \"key1: ${env.key1}\"\n" +
-			"        }\n" +
-			"      }\n" +
-			"    }\n" +
-			"  }\n" +
-			"}\n"
-		);
+    @Test
+    public void testPipelineDeclarative() throws Exception {
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a declarative pipeline job which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                f,
+                "p-5",
+                "pipeline {\n" + "  agent any\n"
+                        + "  stages {\n"
+                        + "    stage('Report folder property key1') {\n"
+                        + "      steps {\n"
+                        + "        withFolderProperties {\n"
+                        + "          echo \"key1: ${env.key1}\"\n"
+                        + "        }\n"
+                        + "      }\n"
+                        + "    }\n"
+                        + "  }\n"
+                        + "}\n");
 
-		//Check the logs
-		r.assertLogContains("key1: value1", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineOutNode() throws Exception {
+        // Check the logs
+        r.assertLogContains("key1: value1", b);
+    }
 
-		//Create a pipeline job which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(f, "p-6",
-			"withFolderProperties {\n" +
-			"  echo(\"key1: ${env.key1}\")\n" +
-			"}"
-		);
+    @Test
+    public void testPipelineOutNode() throws Exception {
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a pipeline job which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                f, "p-6", "withFolderProperties {\n" + "  echo(\"key1: ${env.key1}\")\n" + "}");
 
-		//Check the logs
-		r.assertLogContains("key1: value1", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineInSubFolder() throws Exception {
+        // Check the logs
+        r.assertLogContains("key1: value1", b);
+    }
 
-		//Create a subfolder.
-		Folder sub = f.createProject(Folder.class, "sub-2");
+    @Test
+    public void testPipelineInSubFolder() throws Exception {
 
-		//Add a property in the subfolder that overrides another in the parent folder.
-		FolderProperties properties = new FolderProperties();
-		properties.setProperties(new StringProperty[]{
-				new StringProperty("key1", "override")
-		});
-		sub.addProperty(properties);
+        // Create a subfolder.
+        Folder sub = f.createProject(Folder.class, "sub-2");
 
-		//Create a pipeline job inside the subfolder which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(sub, "p-7",
-			"node {\n" +
-			"  wrap([$class: 'ParentFolderBuildWrapper']){\n" +
-			"    echo(\"key1: ${env.key1}\")\n" +
-			"    echo(\"key2: ${env.key2}\")\n" +
-			"  }\n" +
-			"}"
-		);
+        // Add a property in the subfolder that overrides another in the parent folder.
+        FolderProperties properties = new FolderProperties();
+        properties.setProperties(new StringProperty[] {new StringProperty("key1", "override")});
+        sub.addProperty(properties);
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a pipeline job inside the subfolder which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                sub,
+                "p-7",
+                "node {\n" + "  wrap([$class: 'ParentFolderBuildWrapper']){\n"
+                        + "    echo(\"key1: ${env.key1}\")\n"
+                        + "    echo(\"key2: ${env.key2}\")\n"
+                        + "  }\n"
+                        + "}");
 
-		//Check the logs
-		r.assertLogContains("key1: override", b);
-		r.assertLogContains("key2: value2", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
-	@Test
-	public void testPipelineOverrideEnv() throws Exception {
+        // Check the logs
+        r.assertLogContains("key1: override", b);
+        r.assertLogContains("key2: value2", b);
+    }
 
-		//Create a pipeline job which uses the properties from its parent folder.
-		WorkflowJob p = PipelineTestHelper.createJob(f, "p-8",
-			"withEnv(['key1=old']) {\n" +
-			"  node {\n" +
-			"    wrap([$class: 'ParentFolderBuildWrapper']){\n" +
-			"      echo(\"key1: ${env.key1}\")\n" +
-			"    }\n" +
-			"  }\n" +
-			"}"
-		);
+    @Test
+    public void testPipelineOverrideEnv() throws Exception {
 
-		//Run the build
-		WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+        // Create a pipeline job which uses the properties from its parent folder.
+        WorkflowJob p = PipelineTestHelper.createJob(
+                f,
+                "p-8",
+                "withEnv(['key1=old']) {\n" + "  node {\n"
+                        + "    wrap([$class: 'ParentFolderBuildWrapper']){\n"
+                        + "      echo(\"key1: ${env.key1}\")\n"
+                        + "    }\n"
+                        + "  }\n"
+                        + "}");
 
-		//Check the logs
-		r.assertLogContains("key1: value1", b);
-	}
+        // Run the build
+        WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+
+        // Check the logs
+        r.assertLogContains("key1: value1", b);
+    }
 }
