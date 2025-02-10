@@ -1,7 +1,7 @@
 # Folder Properties
 
-The folder properties plugin is a Jenkins plugin which allows users with config permission to define
-properties for a folder which can then be used by any jobs contained
+The Folder Properties plugin allows users with config permission to define
+properties for a folder which can then be used by jobs contained
 within it or in any of its sub-folders.
 
 The aim here is to remove the need to specify the same properties over
