@@ -34,7 +34,7 @@ Only then will they inherit properties defined by their parent or ancestor folde
 
 #### SCM Step in Freestyle Jobs
 
-Starting with version 1.2, Freestyle jobs can also use folder properties to **define SCM parameters** —e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
+Freestyle jobs can also use folder properties to **define SCM parameters** — e.g. By defining an `SCM_URL` property pointing to the Git repository and a `BRANCH_SELECTOR` property pointing to the branch, tag or commit to be checked out:
 
 ![](docs/images/freestyle-example-scm-1.png)
 
@@ -54,18 +54,6 @@ Pipeline jobs can use step `withFolderProperties` to access them :
 
 ``` groovy
 withFolderProperties{
-    echo("Foo: ${env.FOO}")
-}
-```
-
-Jenkins deployments using some of the older versions of the [Structs
-Plugin](https://plugins.jenkins.io/structs/) will need
-to do this using the `wrap` meta-step :
-
-**Using folder properties in older pipeline jobs**
-
-``` groovy
-wrap([$class: 'ParentFolderBuildWrapper']) {
     echo("Foo: ${env.FOO}")
 }
 ```
