@@ -90,4 +90,4 @@ folder('my folder') {
 
 * [Site](https://plugins.jenkins.io/folder-properties/)
 * [Dependencies](https://plugins.jenkins.io/folder-properties/dependencies/)
-* [Javadoc](https://javadoc.jenkins-ci.org/plugin/folder-properties/)
+* [Javadoc](https://javadoc.jenkins.io/plugin/folder-properties/)
