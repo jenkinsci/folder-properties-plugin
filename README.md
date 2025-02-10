@@ -12,7 +12,7 @@ and over again for all the jobs inside a folder.
 To configure, just create a
 [folder](https://plugins.jenkins.io/cloudbees-folder/),
 go to its configuration page and add as many properties as you need
-under the `Folder Properties` section.
+under the `Folder Properties` section.
 
 In structures where two or more folders are nested, any property defined for a folder will be overridden by any other
 property of the same name defined by one of its sub-folders.
@@ -55,6 +55,24 @@ Pipeline jobs can use step `withFolderProperties` to access them :
 ``` groovy
 withFolderProperties{
     echo("Foo: ${env.FOO}")
+}
+```
+
+Declarative pipeline jobs can also use the `options` directive to leverage folder properties as follows:
+
+``` groovy
+pipeline {
+    agent any
+    options {
+        withFolderProperties()
+    }
+    stages {
+        stage('Test') {
+            steps {
+                echo("Foo: ${env.FOO}")
+            }
+        }
+    }
 }
 ```
 
