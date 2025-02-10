@@ -33,8 +33,7 @@
       </developer>
     </developers>
 
-    <!-- Assuming you want to host on @jenkinsci:-->
-    <url>https://wiki.jenkins.io/display/JENKINS/Folder+Properties+Plugin</url>
+    <url>https://github.com/jenkinsci/folder-properties-plugin/</url>
     <scm>
         <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
