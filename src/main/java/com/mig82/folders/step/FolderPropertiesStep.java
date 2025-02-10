@@ -7,6 +7,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
@@ -57,7 +58,9 @@ public class FolderPropertiesStep extends Step implements Serializable {
     }
 
     private static final class ExpanderImpl extends EnvironmentExpander {
+        @Serial
         private static final long serialVersionUID = 1;
+
         private final EnvVars overrides;
 
         ExpanderImpl(EnvVars overrides) {
