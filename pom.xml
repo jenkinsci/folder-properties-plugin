@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.4</version>
+        <version>4.88</version>
         <relativePath />
     </parent>
     <groupId>com.mig82</groupId>
@@ -12,12 +12,10 @@
     <version>1.2.2-SNAPSHOT</version>
     <packaging>hpi</packaging>
     <properties>
-        <!--jenkins.version>2.60.3</jenkins.version-->
-        <jenkins.version>1.642.4</jenkins.version>
-        <java.level>8</java.level>
+        <jenkins.baseline>2.452</jenkins.baseline>
+        <jenkins.version>${jenkins.baseline}.4</jenkins.version>
     </properties>
     <name>Folder Properties Plugin</name>
-    <description>Allows defining properties for folders which are then inherited by all contained jobs.</description>
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
     <licenses>
         <license>
@@ -38,7 +36,7 @@
     <!-- Assuming you want to host on @jenkinsci:-->
     <url>https://wiki.jenkins.io/display/JENKINS/Folder+Properties+Plugin</url>
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
       <tag>HEAD</tag>
@@ -57,44 +55,63 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.jenkins.tools.bom</groupId>
+                <artifactId>bom-${jenkins.baseline}.x</artifactId>
+                <version>3944.v1a_e4f8b_452db_</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
 
         <!--Need this in order to define properties for folders-->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>5.14</version>
         </dependency>
 
-        <!--Need this in order to be able to test on pipeline jobs-->
+        <!--Need these in order to be able to test on pipeline jobs-->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
-            <artifactId>workflow-aggregator</artifactId>
-            <version>2.0</version>
+            <artifactId>workflow-cps</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!--Need this in order to avoid org.apache.maven.plugins.enforcer.RequireUpperBoundDeps failing because
-         of conflicting dependencies on org.jenkins-ci.plugins:scm-api:1.1 and 1.2 in workflow-aggregator-->
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>script-security</artifactId>
-            <version>1.18</version>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-basic-steps</artifactId>
+            <scope>test</scope>
         </dependency>
 
-        <!--Need this to be able to target Jenkins 1.x according to
-        https://wiki.jenkins.io/display/JENKINS/Structs+plugin-->
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-            <version>1.2</version>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-job</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!--Need this of pipeline custom step -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.0</version>
+        </dependency>
+
+        <!--Need these for declarative pipeline test -->
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-api</artifactId>
         </dependency>
 
     </dependencies>

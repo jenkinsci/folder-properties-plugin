@@ -15,3 +15,6 @@ work/
 # IntelliJ stuff
 .idea
 *.iml
+
+# VSCode stuff
+.vscode
