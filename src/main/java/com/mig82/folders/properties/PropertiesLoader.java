@@ -24,9 +24,8 @@ public class PropertiesLoader {
         EnvVars envVars = new EnvVars();
         // Look in all the ancestors...
         while (parent != null) {
-            if (parent instanceof AbstractFolder) {
+            if (parent instanceof AbstractFolder folder) {
                 LOGGER.log(Level.FINEST, "2. Searching for folder properties in: {0}\n", parent.getDisplayName());
-                AbstractFolder folder = (AbstractFolder) parent;
                 FolderProperties folderProperties =
                         (FolderProperties) folder.getProperties().get(FolderProperties.class);
                 if (folderProperties != null) {
@@ -59,8 +58,8 @@ public class PropertiesLoader {
                 });
             }
             // In the next iteration we want to search for the parent of this parent.
-            if (parent instanceof Item) {
-                parent = ((Item) parent).getParent();
+            if (parent instanceof Item item) {
+                parent = item.getParent();
             } else {
                 parent = null;
             }
