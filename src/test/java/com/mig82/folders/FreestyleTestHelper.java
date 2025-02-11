@@ -11,7 +11,6 @@ import java.io.IOException;
 public class FreestyleTestHelper {
 
     public static FreeStyleProject createJob(Folder parent, String name) throws IOException {
-
         // Create a freestyle job
         FreeStyleProject p = parent.createProject(FreeStyleProject.class, name);
 
@@ -22,7 +21,6 @@ public class FreestyleTestHelper {
     }
 
     public static void addEcho(FreeStyleProject p, String key) {
-
         p.getBuildersList()
                 .add(
                         Functions.isWindows()

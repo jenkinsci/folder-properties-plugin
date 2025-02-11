@@ -8,38 +8,33 @@ import hudson.model.FreeStyleProject;
 import java.io.IOException;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-public class FolderPropertiesTest {
-    @ClassRule
-    public static JenkinsRule r = new JenkinsRule();
+@WithJenkins
+class FolderPropertiesTest {
 
-    @Rule
-    public TestName name = new TestName();
-
+    private static JenkinsRule r;
     private static Folder f;
 
-    @BeforeClass
-    public static void setUp() throws IOException {
-
+    @BeforeAll
+    static void setUp(JenkinsRule rule) throws IOException {
+        r = rule;
         // Create a top level parent folder to test with.
         f = r.jenkins.createProject(Folder.class, "f");
 
         // Add a couple of properties to test with.
-        FolderProperties properties = new FolderProperties();
+        FolderProperties<?> properties = new FolderProperties<>();
         properties.setProperties(
                 new StringProperty[] {new StringProperty("key1", "value1"), new StringProperty("key2", "value2")});
         f.addProperty(properties);
     }
 
     @Test
-    public void testFreestyle() throws Exception {
-
+    void testFreestyle() throws Exception {
         // Create a freestyle project which attempts to use props from parent folder.
         FreeStyleProject p = FreestyleTestHelper.createJob(f, "p-1");
         FreestyleTestHelper.addEcho(p, "key1");
@@ -54,13 +49,12 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testFreestyleInSubFolder() throws Exception {
-
+    void testFreestyleInSubFolder() throws Exception {
         // Create a subfolder.
         Folder sub = f.createProject(Folder.class, "sub-1");
 
         // Add a property in the subfolder that overrides another in the parent folder.
-        FolderProperties properties = new FolderProperties();
+        FolderProperties<?> properties = new FolderProperties<>();
         properties.setProperties(new StringProperty[] {new StringProperty("key1", "override")});
         sub.addProperty(properties);
 
@@ -78,12 +72,11 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineInNode() throws Exception {
-
+    void testPipelineInNode(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 node {
                   wrap([$class: 'ParentFolderBuildWrapper']) {
@@ -100,12 +93,11 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineInNodeNoWrap() throws Exception {
-
+    void testPipelineInNodeNoWrap(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 node {
                   withFolderProperties {
@@ -122,12 +114,11 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineDeclarative() throws Exception {
-
+    void testPipelineDeclarative(TestInfo info) throws Exception {
         // Create a declarative pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 pipeline {
                   agent any
@@ -151,12 +142,11 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineOutNode() throws Exception {
-
+    void testPipelineOutNode(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 withFolderProperties {
                   echo("key1: ${env.key1}")
@@ -171,20 +161,19 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineInSubFolder() throws Exception {
-
+    void testPipelineInSubFolder(TestInfo info) throws Exception {
         // Create a subfolder.
         Folder sub = f.createProject(Folder.class, "sub-2");
 
         // Add a property in the subfolder that overrides another in the parent folder.
-        FolderProperties properties = new FolderProperties();
+        FolderProperties<?> properties = new FolderProperties<>();
         properties.setProperties(new StringProperty[] {new StringProperty("key1", "override")});
         sub.addProperty(properties);
 
         // Create a pipeline job inside the subfolder which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 sub,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 node {
                   wrap([$class: 'ParentFolderBuildWrapper']){
@@ -203,12 +192,11 @@ public class FolderPropertiesTest {
     }
 
     @Test
-    public void testPipelineOverrideEnv() throws Exception {
-
+    void testPipelineOverrideEnv(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
                 f,
-                "p-" + name.getMethodName(),
+                "p-" + info.getTestMethod().orElseThrow().getName(),
                 """
                 withEnv(['key1=old']) {
                   node {
