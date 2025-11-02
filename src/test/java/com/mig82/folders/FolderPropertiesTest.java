@@ -75,9 +75,7 @@ class FolderPropertiesTest {
     void testPipelineInNode(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                f, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 node {
                   wrap([$class: 'ParentFolderBuildWrapper']) {
                     echo("key1: ${env.key1}")
@@ -96,9 +94,7 @@ class FolderPropertiesTest {
     void testPipelineInNodeNoWrap(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                f, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 node {
                   withFolderProperties {
                     echo("key1: ${env.key1}")
@@ -117,9 +113,7 @@ class FolderPropertiesTest {
     void testPipelineDeclarative(TestInfo info) throws Exception {
         // Create a declarative pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                f, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 pipeline {
                   agent any
                   stages {
@@ -145,9 +139,7 @@ class FolderPropertiesTest {
     void testPipelineOutNode(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                f, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 withFolderProperties {
                   echo("key1: ${env.key1}")
                 }
@@ -172,9 +164,7 @@ class FolderPropertiesTest {
 
         // Create a pipeline job inside the subfolder which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                sub,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                sub, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 node {
                   wrap([$class: 'ParentFolderBuildWrapper']){
                     echo("key1: ${env.key1}")
@@ -195,9 +185,7 @@ class FolderPropertiesTest {
     void testPipelineOverrideEnv(TestInfo info) throws Exception {
         // Create a pipeline job which uses the properties from its parent folder.
         WorkflowJob p = PipelineTestHelper.createJob(
-                f,
-                "p-" + info.getTestMethod().orElseThrow().getName(),
-                """
+                f, "p-" + info.getTestMethod().orElseThrow().getName(), """
                 withEnv(['key1=old']) {
                   node {
                     wrap([$class: 'ParentFolderBuildWrapper']){
