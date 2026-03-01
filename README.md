@@ -19,6 +19,28 @@ property of the same name defined by one of its sub-folders.
 
 ![](docs/images/folder-properties-config.png)
 
+## Global Configuration
+
+Folder properties can be **globally injected** into all jobs within those folders, regardless of individual job
+configuration.
+
+When global injection is enabled, the properties defined on a folder are automatically exposed (via
+environment variables) to every job in that folder and its sub-folders. For Pipeline jobs this means the values
+are available in all parts of the pipeline script, including top‑level sections such as the `parameters` block,
+without needing to wrap code in a specific step.
+
+By contrast, using the `withFolderProperties` step (or `options { withFolderProperties() }` in a declarative
+pipeline, as shown below) only makes the properties available inside the wrapped block or for the duration of the
+pipeline run where the option is applied. This gives you more explicit control over the scope of the properties and
+avoids affecting jobs that do not opt in.
+
+As a rule of thumb, use **global injection** when you want a consistent set of shared defaults for all jobs in a
+folder hierarchy (for example, common URLs, credentials IDs, or organizational settings). Use **`withFolderProperties`**
+when you want per-pipeline control over when those properties are visible, or when you prefer jobs to explicitly opt
+into using folder properties.
+
+![](docs/images/folder-properties-global-config.png)
+
 ## Freestyle Jobs
 
 Freestyle jobs must opt into the `Folder Properties` build wrapper from
@@ -103,6 +125,7 @@ folder('my folder') {
 * [GongYi](https://github.com/topikachu).
 * [Stefan Hirche](https://github.com/StefanHirche)
 * [Deepak Gupta](https://github.com/Mr-DG-Wick)
+* [Jiri Simacek](https://github.com/jsimacek)
 
 ## References
 
