@@ -1,5 +1,6 @@
 package com.mig82.folders.step;
 
+import com.mig82.folders.global.Config;
 import com.mig82.folders.properties.PropertiesLoader;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -44,9 +45,14 @@ public class FolderPropertiesStep extends Step implements Serializable {
         @Override
         protected Void run() throws Exception {
             LOGGER.log(Level.FINER, "Run in 'withFolderProperties' custom pipeline step");
+            BodyInvoker bodyInvoker = getContext().newBodyInvoker();
+            if (Config.get().isEnabledGlobally()) {
+                LOGGER.log(Level.FINER, "Properties applied globally");
+                bodyInvoker.start().get();
+                return null;
+            }
             Job job = getContext().get(Run.class).getParent();
             EnvVars envVars = PropertiesLoader.loadFolderProperties(job);
-            BodyInvoker bodyInvoker = getContext().newBodyInvoker();
             if (!envVars.isEmpty()) {
                 LOGGER.log(Level.FINER, "Find the folder properties");
                 bodyInvoker.withContext(EnvironmentExpander.merge(
