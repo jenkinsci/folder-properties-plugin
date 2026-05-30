@@ -1,13 +1,16 @@
 package com.mig82.folders;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
+import com.mig82.folders.global.Config;
 import com.mig82.folders.properties.FolderProperties;
 import com.mig82.folders.properties.StringProperty;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import java.io.IOException;
+import jenkins.model.GlobalConfiguration;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -200,5 +203,40 @@ class FolderPropertiesTest {
 
         // Check the logs
         r.assertLogContains("key1: value1", b);
+    }
+
+    @Test
+    void testGlobal(TestInfo info) throws Exception {
+        var config = r.jenkins.getExtensionList(GlobalConfiguration.class).get(Config.class);
+        Assertions.assertNotNull(config);
+
+        config.setEnabledGlobally(true);
+        try {
+            // Create a declarative pipeline job which uses the properties from its parent folder.
+            WorkflowJob p = PipelineTestHelper.createJob(
+                    f, "p-" + info.getTestMethod().orElseThrow().getName(), """
+                            pipeline {
+                              agent any
+                              parameters {
+                                string(name: 'PARAM1', defaultValue: env.key1)
+                              }
+                              stages {
+                                stage('Report folder property key1') {
+                                  steps {
+                                    echo "key1: ${params.PARAM1}"
+                                  }
+                                }
+                              }
+                            }
+                            """);
+
+            // Run the build
+            WorkflowRun b = r.assertBuildStatusSuccess(p.scheduleBuild2(0));
+
+            // Check the logs
+            r.assertLogContains("key1: value1", b);
+        } finally {
+            config.setEnabledGlobally(false);
+        }
     }
 }
