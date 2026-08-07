@@ -11,7 +11,6 @@ import hudson.util.CopyOnWriteList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.ArrayUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest2;
@@ -66,7 +65,7 @@ public class FolderProperties<C extends AbstractFolder<?>> extends AbstractFolde
      */
     @DataBoundSetter
     public void setProperties(StringProperty[] properties) {
-        LOGGER.log(Level.FINER, "FolderProperties.setProperties({0})\n", ArrayUtils.toString(properties));
+        LOGGER.log(Level.FINER, "FolderProperties.setProperties({0})\n", java.util.Arrays.toString(properties));
         for (StringProperty property : properties) {
             this.properties.add(property);
         }
